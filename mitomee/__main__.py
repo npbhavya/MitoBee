@@ -20,7 +20,7 @@ def snake_base(rel_path):
 
 def get_version():
     try:
-        from MAGBuild._version import version
+        from MitoMee._version import version
     except Exception:
         version = "0.1.0"
     return version
@@ -100,7 +100,7 @@ mitomee run --input <input directory with metagenome reads> --extn fq --host_seq
 
 @common_options
 def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_frontend, **kwargs):
-    """Run MAGBuild"""
+    """Run mitomee workflow"""
     copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
 
     merge_config = {
