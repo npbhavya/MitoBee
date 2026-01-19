@@ -1,0 +1,68 @@
+import yaml
+import os
+import glob
+
+"""Parse config"""
+configfile: os.path.join(workflow.basedir, "..", "config", "config.yaml")
+
+"""Rules"""
+include: os.path.join("rules", "0.preflight.smk")
+include: os.path.join("rules", "1.qc.smk")
+include: os.path.join("rules", "2.mapping.smk")
+include: os.path.join("rules", "QC-reports.smk")
+include: os.path.join("rules", "3.Mitogenomes.smk")
+
+
+"""Mark target rules"""
+target_rules = []
+def targetRule(fn):
+    assert fn.__name__.startswith('__')
+    target_rules.append(fn.__name__[2:])
+    return fn
+
+"""
+Defining the targets dictionary
+"""
+targets ={'qc':[], 'host':[]}
+
+if config['args']['sequencing'] == 'paired':
+    for sample in sample_names:
+        targets['qc'].append(expand(os.path.join(dir_fastp,"{sample}.stats.html"), sample=sample)),
+        targets['qc'].append(expand(os.path.join(dir_hostcleaned,"{sample}_temp.bam"), sample=sample)),
+        targets['qc'].append(expand(os.path.join(dir_hostcleaned,"{sample}_bamstats.txt"), sample=sample)),
+        targets['qc'].append(expand(os.path.join(dir_hostcleaned,"{sample}_R1.hostcleaned.fastq.gz"), sample=sample)),
+        targets['qc'].append(expand(os.path.join(dir_hostcleaned,"{sample}_R2.hostcleaned.fastq.gz"), sample=sample)),
+        targets['qc'].append(expand(os.path.join(dir_reports,"QC","{sample}_host_qc_report.txt"), sample=sample)),
+        targets['qc'].append(os.path.join(dir_reports, "final_host_qc_summary.txt"))
+
+if config['args']['sequencing'] == 'paired':
+    for sample in sample_names:
+        targets['host'].append(expand(os.path.join(dir_hostcleaned,"{sample}_R1.mapped.fastq.gz"), sample=sample)),
+        targets['host'].append(expand(os.path.join(dir_hostcleaned,"{sample}_R2.mapped.fastq.gz"), sample=sample)),
+        targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mt_R1.mapped.fastq.gz"), sample=sample)),
+        targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mt_R2.mapped.fastq.gz"), sample=sample)),
+        targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.vcf.gz"), sample=sample)),
+        targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.vcf.gz"), sample=sample))
+        targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.norm.vcf.gz"), sample=sample))
+        targets['host'].append(os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.filtered.norm.vcf.gz"))
+        targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta"), sample=sample))
+        targets['host'].append(os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome_alignment.fasta"))
+        targets['host'].append(os.path.join(dir_reports, "mitogenome", "mitogenome_phylo_tree.nwk"))
+
+
+@targetRule
+rule all:
+    input:
+        targets['qc'],
+        targets['host'],
+
+
+@targetRule
+rule qc:
+    input:
+        targets['qc']
+
+@targetRule
+rule host:
+    input:
+        targets['host']
