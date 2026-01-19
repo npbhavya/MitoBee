@@ -58,7 +58,7 @@ rule host_mito_snps:
         stats=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.stats.txt"),
         depth=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps_depth.txt")
     conda:
-        os.path.join(dir_env, "bcftools.yaml")
+        os.path.join(dir_env, "minimap2.yaml")
     resources:
         mem =config['resources']['smalljob']['mem'],
         time = config['resources']['smalljob']['time']
@@ -100,7 +100,7 @@ rule normalise_vcfs:
         host= config['args']['host_seq'],
         temp=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.temp.vcf.gz"), 
     conda:
-        os.path.join(dir_env, "bcftools.yaml")
+        os.path.join(dir_env, "minimap2.yaml")
     shell:
         """
         set -euo pipefail
@@ -125,7 +125,7 @@ rule generate_allele_frequency:
     params:
         prefix = "{sample}",
     conda:
-        os.path.join(dir_env, "bcftools.yaml")
+        os.path.join(dir_env, "minimap2.yaml")
     shell:
         """
         set -euo pipefail
@@ -153,7 +153,7 @@ rule merge_vcf:
         temp=os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.temp.vcf.gz"),
         folder=os.path.join(dir_hostcleaned, "mitogenome")
     conda:
-        os.path.join(dir_env, "bcftools.yaml")
+        os.path.join(dir_env, "minimap2.yaml")
     shell:
         """
         set -euo pipefail
@@ -177,7 +177,7 @@ rule snp_alignment:
     params:
         sample = "{sample}",
     conda:
-        os.path.join(dir_env, "bcftools.yaml")
+        os.path.join(dir_env, "minimap2.yaml")
     params:
         sample="{sample}",
         folder=os.path.join(dir_hostcleaned, "mitogenome")
