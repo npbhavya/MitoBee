@@ -171,7 +171,7 @@ rule merge_vcf:
 rule snp_alignment:
     input:
         merged_vcf = os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.filtered.norm.vcf.gz"),
-        host= config['extra_db']['mitogenome']
+        host= config['args']['host_seq']
     output:
         consensus_fasta = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta")
     params:
