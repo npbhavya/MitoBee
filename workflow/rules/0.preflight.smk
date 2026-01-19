@@ -75,8 +75,8 @@ elif config['args']['sequencing'] == 'longread':
 print(f"Samples are {sample_names}")
 
 FQEXTN = extn[0]
-PATTERN_R1 = '{sample}_1.' + extn
-PATTERN_R2 = '{sample}_2.' + extn
+PATTERN_R1 = '{sample}_R1.' + extn
+PATTERN_R2 = '{sample}_R2.' + extn
 PATTERN_LONG= '{sample}' + extn
 
 """ONSTART/END/ERROR

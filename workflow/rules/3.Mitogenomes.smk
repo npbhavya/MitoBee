@@ -8,7 +8,7 @@ rule host_mito_mapping:
     input:
         mr1 = os.path.join(dir_hostcleaned,"{sample}_R1.mapped.fastq.gz"),
         mr2 = os.path.join(dir_hostcleaned,"{sample}_R2.mapped.fastq.gz"),
-        host= config['extra_db']['mitogenome']
+        host= config['args']['host_seq']
     output:
         mr1_mt = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mt_R1.mapped.fastq.gz"),
         mr2_mt = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mt_R2.mapped.fastq.gz"),
@@ -48,7 +48,7 @@ rule host_mito_mapping:
 rule host_mito_snps:
     input:
         bam = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.bam"),
-        host= config['extra_db']['mitogenome']
+        host= config['args']['host_seq']
     output:
         vcf = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.vcf.gz"),
         filterred_vcf = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.vcf.gz")
@@ -97,7 +97,7 @@ rule normalise_vcfs:
     output:
         norm_vcf = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.norm.vcf.gz")
     params:
-        host= config['extra_db']['mitogenome'],
+        host= config['args']['host_seq'],
         temp=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.temp.vcf.gz"), 
     conda:
         os.path.join(dir_env, "bcftools.yaml")
