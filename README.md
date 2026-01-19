@@ -7,3 +7,20 @@
 # MitoMee
 
 ## Snakemake workflow to get mitogenomes from metagenomic data
+
+### Install 
+
+**Source install**
+Run the below commands:
+
+    git clone https://github.com/npbhavya/MitoMee.git
+    cd MitMee
+    mamba create -y -n mitomee python=3.13
+    conda activate mitomee
+    pip install -e . 
+
+
+**Once I have version release, I will upload them to conda and pip as well**
+
+### Running the code
+
