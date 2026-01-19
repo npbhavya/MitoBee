@@ -48,7 +48,7 @@ if config['args']['sequencing'] == 'paired':
         targets['host'].append(expand(os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta"), sample=sample))
         targets['host'].append(os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.filtered.norm.vcf.gz"))
 
-@targetRuleßß
+@targetRule
 rule all:
     input:
         targets['qc'],
