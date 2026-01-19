@@ -168,3 +168,31 @@ rule merge_vcf:
         fi
         """
 
+rule snp_alignment:
+    input:
+        merged_vcf = os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.filtered.norm.vcf.gz"),
+        host= config['extra_db']['mitogenome']
+    output:
+        consensus_fasta = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta")
+    params:
+        sample = "{sample}",
+    conda:
+        os.path.join(dir_env, "bcftools.yaml")
+    params:
+        sample="{sample}",
+        folder=os.path.join(dir_hostcleaned, "mitogenome")
+    shell:
+        """
+        set -euo pipefail
+        if [ -f {output.consensus_fasta} ]; then
+            echo "SNP alignment fasta already exists. Skipping..."
+            exit 0
+        else
+            SAMPLE_FULL=$(bcftools query -l {input.merged_vcf} | grep "{wildcards.sample}")
+            bcftools consensus -s "$SAMPLE_FULL" -f {input.host} {input.merged_vcf} > {output.consensus_fasta}
+
+            # Add sample name to fasta header
+            sed -i "s/>/>${{wildcards.sample}}_/g" {output.consensus_fasta}
+        fi
+        """
+
