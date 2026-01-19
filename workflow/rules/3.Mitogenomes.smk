@@ -12,8 +12,8 @@ rule host_mito_mapping:
     output:
         mr1_mt = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mt_R1.mapped.fastq.gz"),
         mr2_mt = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mt_R2.mapped.fastq.gz"),
-    params:
         mapped_bam=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.bam"),
+    params:
         stats=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_bamstats.txt")
     conda:
         os.path.join(dir_env, "minimap2.yaml")
@@ -30,13 +30,13 @@ rule host_mito_mapping:
             exit 0
         else
             minimap2 -ax sr -t {threads} {input.host} {input.mr1} {input.mr2} \
-                | samtools view -b -F 4 -@ {threads} -o {params.mapped_bam} -
-            samtools flagstat {params.mapped_bam} > {params.stats}
+                | samtools view -b -F 4 -@ {threads} -o {output.mapped_bam} -
+            samtools flagstat {output.mapped_bam} > {params.stats}
 
             samtools fastq -@ {threads} -0 /dev/null -s /dev/null -n \
                 -1 >(gzip -c  > {output.mr1_mt}) \
                 -2 >(gzip -c  > {output.mr2_mt}) \
-                {params.mapped_bam}
+                {output.mapped_bam}
             
 
             touch {output.mr1_mt}
