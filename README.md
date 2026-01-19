@@ -4,7 +4,6 @@
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/npbhavya/MitoMee/main)
 
 
-
 # MitoMee
-Snakemake workflow to get mitogenomes from metagenomic data
 
+## Snakemake workflow to get mitogenomes from metagenomic data
