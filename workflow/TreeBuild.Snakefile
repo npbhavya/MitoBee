@@ -70,16 +70,10 @@ rule build_alignment_fasta:
         os.path.join(dir_env, "mafft.yaml")
     shell:
         """
-        set -euo pipefail
-        if [ -f {output.final_fasta} ]; then
-            echo "Final alignment fasta already exists. Skipping..."
-            exit 0
-        else
-            cat {params.folder}/*.fasta > {params.concat}
-            cat {params.host} >> {params.concat}
-            awk '/^>/{{print $1; next}} {{print}}' {params.concat} > {params.concat_clean}
-            mafft --auto {params.concat_clean} > {output.final_fasta}
-        fi
+        cat {params.folder}/*.fasta > {params.concat}
+        cat {params.host} >> {params.concat}
+        awk '/^>/{{print $1; next}} {{print}}' {params.concat} > {params.concat_clean}
+        mafft --auto {params.concat_clean} > {output.final_fasta}
         """
 
 rule phylo_tree:
