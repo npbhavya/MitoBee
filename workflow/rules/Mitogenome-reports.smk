@@ -49,7 +49,7 @@ rule mitogenome_summary:
 
 rule mitogenome_reports_aggregate:
     input:
-        expand(os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.summary.tsv"), sample=samples)
+        expand(os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.summary.tsv"), sample=sample_names)
     output:
         aggregate=os.path.join(dir_reports, "mitogenome_reports", "mitogenome_consensus_summary.tsv")
     shell:
