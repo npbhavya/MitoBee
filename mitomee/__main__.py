@@ -163,6 +163,7 @@ def tree(_input, extn, host_seq, output, temp_dir, configfile, conda_frontend, *
         snakefile_path=snake_base(os.path.join('workflow', 'TreeBuild.Snakefile')),
         configfile=configfile,
         merge_config=merge_config,
+        targets=["all"], 
         **kwargs
     )
 
