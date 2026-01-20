@@ -64,6 +64,7 @@ rule build_alignment_fasta:
     params:
         folder=os.path.join(dir_hostcleaned, "mitogenome"),
         concat=os.path.join(dir_hostcleaned, "mitogenome", "all_samples.fasta"),
+        concat_clean=os.path.join(dir_hostcleaned, "mitogenome", "all_samples_clean.fasta"),
         host= config['args']['host_seq']
     conda:
         os.path.join(dir_env, "mafft.yaml")
@@ -76,6 +77,7 @@ rule build_alignment_fasta:
         else
             cat {params.folder}/*.fasta > {params.concat}
             cat {params.host} >> {params.concat}
+            awk '/^>/{{print ">" $1; next}} {{print}}' {params.concat} > {params.concat_clean}
             mafft --auto {params.concat} > {output.final_fasta}
         fi
         """
