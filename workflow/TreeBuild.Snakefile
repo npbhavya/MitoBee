@@ -98,14 +98,6 @@ rule phylo_tree:
 
 
 """Mark target rules"""
-target_rules = []
-def targetRule(fn):
-    assert fn.__name__.startswith('__')
-    target_rules.append(fn.__name__[2:])
-    return fn
-
-
-@targetRule
 rule all:
     input:
         os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome.aln"),
