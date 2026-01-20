@@ -112,4 +112,5 @@ def targetRule(fn):
 @targetRule
 rule all:
     input:
+        os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome.aln")
         os.path.join(dir_reports, "mitogenome_phylo_tree.nwk")
