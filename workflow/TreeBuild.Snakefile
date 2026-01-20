@@ -84,7 +84,7 @@ rule phylo_tree:
     input:
         final_fasta = os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome.aln")
     output:
-        tree = os.path.join(dir_reports, "mitogenome", "mitogenome_phylo_tree.nwk")
+        tree = os.path.join(dir_reports, "mitogenome_phylo_tree.nwk")
     conda:
         os.path.join(dir_env, "mafft.yaml")
     shell:
@@ -108,8 +108,7 @@ def targetRule(fn):
 
 targets ={'host':[]}
 #Definiting the targets
-targets['host'].append(os.path.join(dir_reports, "mitogenome_consensus_summary.tsv"))
-targets['host'].append(os.path.join(dir_reports, "mitogenome", "mitogenome_phylo_tree.nwk"))
+targets['host'].append(os.path.join(dir_reports, "mitogenome_phylo_tree.nwk"))
 
 @targetRule
 rule all:
