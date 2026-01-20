@@ -188,7 +188,7 @@ rule snp_alignment:
             echo "SNP alignment fasta already exists. Skipping..."
             exit 0
         else
-            SAMPLE_FULL=$(bcftools query -l {input.merged_vcf} | grep "{wildcards.sample}")
+            SAMPLE_FULL=$(bcftools query -l {input.merged_vcf} | grep "{parmas.sample}")
             bcftools consensus -s "$SAMPLE_FULL" -f {input.host} {input.merged_vcf} > {output.consensus_fasta}
 
             # Add sample name to fasta header
