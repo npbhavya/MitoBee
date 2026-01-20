@@ -17,19 +17,19 @@ rule mitogenome_summary:
     shell:
         r"""
         awk -v fname="{params.sample}_consensus.fasta" '
-            /^>/ {
+            /^>/ {{
                 header = substr($0, 2)
                 next
-            }
-            {
+            }}
+            {{
                 seq = seq $0
-            }
-            END {
+            }}
+            END {{
                 len = length(seq)
                 gc = gsub(/[GCgc]/, "", seq)
                 gc_pct = (len > 0) ? (gc / len * 100) : 0
                 printf "%s\t%s\t%d\t%.2f\n", fname, header, len, gc_pct
-            }
+            }}
         ' {input.fasta} > {output.summary}
         """
 
