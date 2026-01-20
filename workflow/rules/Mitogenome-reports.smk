@@ -30,7 +30,7 @@ rule mitogenome_summary:
     shell:
         r"""
         sample="{params.sample}"
-        awk -v fname="{{sample}}_consensus.fasta" '
+        awk -v fname="{sample}_consensus.fasta" '
             /^>/ {
                 header = substr($0, 2)
                 next
