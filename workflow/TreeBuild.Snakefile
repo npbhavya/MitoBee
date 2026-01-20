@@ -62,7 +62,7 @@ rule build_alignment_fasta:
     output:
         final_fasta = os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome.aln")
     params:
-        folder=os.path.join(dir_hostcleaned, "mitogenome"),
+        folder=os.path.join(input_dir),
         concat=os.path.join(dir_hostcleaned, "mitogenome", "all_samples.fasta"),
         concat_clean=os.path.join(dir_hostcleaned, "mitogenome", "all_samples_clean.fasta"),
         host= config['args']['host_seq']
