@@ -20,7 +20,7 @@ extn=config['args']['extn']
 pattern = os.path.join(input_dir, f"*.{extn}")
 file_paths = sorted(glob.glob(pattern))
 # Extract sample names (strip extension only)
-sample_names = [re.sub(rf"\.{re.escape(ext)}$", '', os.path.basename(fp)) for fp in file_paths]
+sample_names = [re.sub(rf"\.{re.escape(extn)}$", '', os.path.basename(fp)) for fp in file_paths]
 
 print(f"Samples found: {sample_names}")
 
