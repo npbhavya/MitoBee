@@ -52,10 +52,6 @@ dir_script = os.path.join(workflow.basedir,"scripts")
 dir_hostcleaned = os.path.join(dir_out, 'PROCESSING' ,'2_host_cleaned')
 dir_reports = os.path.join(dir_out, 'REPORTS')
 
-targets ={'host':[]}
-#Definiting the targets
-targets['host'].append(os.path.join(dir_reports, "mitogenome_consensus_summary.tsv"))
-
 
 """
 Rules
@@ -99,6 +95,19 @@ rule phylo_tree:
             iqtree -s {input.final_fasta} -m GTR+G -bb 3000 -nt AUTO
         fi
         """
+
+
+"""Mark target rules"""
+target_rules = []
+def targetRule(fn):
+    assert fn.__name__.startswith('__')
+    target_rules.append(fn.__name__[2:])
+    return fn
+
+targets ={'host':[]}
+#Definiting the targets
+targets['host'].append(os.path.join(dir_reports, "mitogenome_consensus_summary.tsv"))
+targets['host'].append(os.path.join(dir_reports, "mitogenome", "mitogenome_phylo_tree.nwk"))
 
 @targetRule
 rule all:
