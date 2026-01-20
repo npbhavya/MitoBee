@@ -78,7 +78,7 @@ rule build_alignment_fasta:
             cat {params.folder}/*.fasta > {params.concat}
             cat {params.host} >> {params.concat}
             awk '/^>/{{print ">" $1; next}} {{print}}' {params.concat} > {params.concat_clean}
-            mafft --auto {params.concat} > {output.final_fasta}
+            mafft --auto {params.concat_clean} > {output.final_fasta}
         fi
         """
 
