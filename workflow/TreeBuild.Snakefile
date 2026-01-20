@@ -91,13 +91,7 @@ rule phylo_tree:
         os.path.join(dir_env, "mafft.yaml")
     shell:
         """
-        set -euo pipefail
-        if [ -f {output.tree} ]; then
-            echo "Phylogenetic tree already exists. Skipping..."
-            exit 0
-        else
             iqtree -s {input.final_fasta} -m GTR+G -bb 3000 -nt AUTO
-        fi
         """
 
 
