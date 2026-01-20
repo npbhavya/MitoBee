@@ -80,7 +80,7 @@ def common_options(func):
 @click.group(cls=OrderedCommands, context_settings=dict(help_option_names=["-h", "--help"]))
 @click.version_option(get_version(), "-v", "--version", is_flag=True)
 def cli():
-    """Assembling pure culture phages from both Illumina and Nanopore sequencing technology
+    """ Extarct and assemble host mitochondrial genomes from metagenomic sequencing data.
     \b
     For more options, run:
     mitomee --help"""
@@ -128,6 +128,44 @@ def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_
         **kwargs
     )
 
+help_msg_run = """
+\b
+RUN EXAMPLES 
+mitomee tree --input output/REPORTS/mitogenome --extn fasta --host_seq test-files/am-dh4.fasta --output output -k
+"""
+@click.command(epilog=help_msg_run, 
+    context_settings=dict(help_option_names=["-h", "--help"], ignore_unknown_options=True)
+    )
+
+@common_options
+def run(_input, extn, host_seq, output, temp_dir, configfile, conda_frontend, **kwargs):
+    """Run mitomee workflow"""
+    copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
+
+    merge_config = {
+        "args": {
+            "input": _input, 
+            "output": output, 
+            "extn": extn,
+            "host_seq": host_seq,
+            "configfile": configfile,
+            "temp_dir": temp_dir,
+        }
+    }
+
+    snake_default = list(kwargs.get('snake_default', []))
+    if conda_frontend and not any('--conda-frontend' in str(arg) for arg in snake_default):
+        snake_default.extend(['--conda-frontend', conda_frontend])
+    kwargs['snake_default'] = tuple(snake_default)
+
+    # run!
+    run_snakemake(
+        snakefile_path=snake_base(os.path.join('workflow', 'TreeBuild.Snakefile')),
+        configfile=configfile,
+        merge_config=merge_config,
+        **kwargs
+    )
+
 
 @click.command()
 @click.option('--configfile', default='config.yaml', help='Copy template config to file', show_default=True)
@@ -143,6 +181,7 @@ def citation(**kwargs):
 
 
 cli.add_command(run)
+cli.add_command(tree)
 cli.add_command(config)
 cli.add_command(citation)
 
