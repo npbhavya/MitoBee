@@ -192,7 +192,8 @@ rule snp_alignment:
             bcftools consensus -s "$SAMPLE_FULL" -f {input.host} {input.merged_vcf} > {output.consensus_fasta}
 
             # Add sample name to fasta header
-            sed -i "s/>/>${{params.sample}}_/g" {output.consensus_fasta}
+            sample="{params.sample}"
+            sed -i "s/>/>${{sample}}_/g" {output.consensus_fasta}
         fi
         """
 
