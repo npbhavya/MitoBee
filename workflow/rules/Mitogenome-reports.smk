@@ -1,6 +1,7 @@
 """
 Snakemake rules for generating mitogenome reports
 """
+from glob import glob
 
 rule mitogenome_output:
     """
