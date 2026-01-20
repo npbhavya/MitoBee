@@ -108,9 +108,8 @@ def targetRule(fn):
     target_rules.append(fn.__name__[2:])
     return fn
 
-targets ={'host':[]}
 
 @targetRule
 rule all:
     input:
-        targets['host'].append(os.path.join(dir_reports, "mitogenome_phylo_tree.nwk"))
+        os.path.join(dir_reports, "mitogenome_phylo_tree.nwk")
