@@ -11,7 +11,7 @@ rule mitogenome_summary:
     input:
         fasta=os.path.join(dir_reports, "mitogenome", "{sample}_consensus.fasta")
     output:
-        summary=os.path.join(dir_reports, "mitogenome", "{sample}_consensus.summary.tsv")
+        summary=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.summary.tsv")
     params:
         sample="{sample}"
     shell:

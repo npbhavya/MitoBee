@@ -1,0 +1,6 @@
+name: mafft
+channels:
+    - bioconda
+dependencies:
+    - mafft>=7.525
+    - iqtree>=3.0.1
