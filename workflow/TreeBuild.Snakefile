@@ -58,7 +58,7 @@ Rules
 """
 rule build_alignment_fasta:
     input:
-        fasta=expand(os.path.join(dir_reports, "mitogenome", "{sample}.fasta"), sample=sample_names)
+        fasta=expand(os.path.join(input_dir, "{sample}.{extn}"), sample=sample_names)
     output:
         final_fasta = os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome.aln")
     params:
