@@ -138,7 +138,7 @@ mitomee tree --input output/REPORTS/mitogenome --extn fasta --host_seq test-file
     )
 
 @common_options
-def run(_input, extn, host_seq, output, temp_dir, configfile, conda_frontend, **kwargs):
+def tree(_input, extn, host_seq, output, temp_dir, configfile, conda_frontend, **kwargs):
     """Run mitomee workflow"""
     copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
 
