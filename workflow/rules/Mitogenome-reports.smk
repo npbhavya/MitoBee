@@ -45,3 +45,14 @@ rule mitogenome_summary:
             }
         ' {input.fasta} > {output.summary}
         """
+
+rule mitogenome_reports_aggregate:
+    input:
+        expand(os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.summary.tsv"), sample=samples)
+    output:
+        aggregate=os.path.join(dir_reports, "mitogenome_reports", "mitogenome_consensus_summary.tsv")
+    shell:
+        """
+        echo -e "filename\theader\tlength\tGC_content" > {output.aggregate}
+        cat {input} >> {output.aggregate}
+        """
