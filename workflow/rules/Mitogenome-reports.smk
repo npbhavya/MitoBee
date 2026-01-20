@@ -3,29 +3,15 @@ Snakemake rules for generating mitogenome reports
 """
 from glob import glob
 
-rule mitogenome_output:
-    """
-    Generate a mitogenome report using provided data.
-    """
-    input:
-        consensus_fasta = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta")
-    output:
-        report=os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.fasta")
-    shell:
-        """
-        cp {input.consensus_fasta} {output.report}
-        """
-
-
 rule mitogenome_summary:
     """
     Summarize mitogenome consensus FASTA:
     filename, header, length, GC content
     """
     input:
-        fasta=os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.fasta")
+        fasta=os.path.join(dir_reports, "mitogenome", "{sample}_consensus.fasta")
     output:
-        summary=os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.summary.tsv")
+        summary=os.path.join(dir_reports, "mitogenome", "{sample}_consensus.summary.tsv")
     params:
         sample="{sample}"
     shell:
@@ -49,9 +35,9 @@ rule mitogenome_summary:
 
 rule mitogenome_reports_aggregate:
     input:
-        expand(os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.summary.tsv"), sample=sample_names)
+        expand(os.path.join(dir_reports, "mitogenome", "{sample}_consensus.summary.tsv"), sample=sample_names)
     output:
-        aggregate=os.path.join(dir_reports, "mitogenome_reports", "mitogenome_consensus_summary.tsv")
+        aggregate=os.path.join(dir_reports, "mitogenome_consensus_summary.tsv")
     shell:
         """
         echo -e "filename\theader\tlength\tGC_content" > {output.aggregate}

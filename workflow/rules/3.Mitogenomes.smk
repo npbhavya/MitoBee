@@ -173,7 +173,7 @@ rule snp_alignment:
         merged_vcf = os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.filtered.norm.vcf.gz"),
         host= config['args']['host_seq']
     output:
-        consensus_fasta = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta")
+        consensus_fasta = os.path.join(dir_reports, "mitogenome", "{sample}_consensus.fasta")
     params:
         sample = "{sample}",
     conda:
