@@ -9,7 +9,7 @@ rule mitogenome_output:
     input:
         consensus_fasta = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_consensus.fasta")
     output:
-        report=os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.fasta"))
+        report=os.path.join(dir_reports, "mitogenome_reports", "{sample}_consensus.fasta")
     shell:
         """
         cp {input.consensus_fasta} {output.report}
