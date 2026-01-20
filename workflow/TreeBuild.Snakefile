@@ -57,6 +57,9 @@ targets ={'host':[]}
 targets['host'].append(os.path.join(dir_reports, "mitogenome_consensus_summary.tsv"))
 
 
+"""
+Rules
+"""
 rule build_alignment_fasta:
     input:
         fasta=expand(os.path.join(dir_reports, "mitogenome", "{sample}_consensus.fasta"), sample=sample_names)
@@ -96,3 +99,8 @@ rule phylo_tree:
             iqtree -s {input.final_fasta} -m GTR+G -bb 3000 -nt AUTO
         fi
         """
+
+@targetRule
+rule all:
+    input:
+        targets['host']
