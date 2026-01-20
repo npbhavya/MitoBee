@@ -58,7 +58,7 @@ Rules
 """
 rule build_alignment_fasta:
     input:
-        fasta=expand(os.path.join(dir_reports, "mitogenome", "{sample}_consensus.fasta"), sample=sample_names)
+        fasta=expand(os.path.join(dir_reports, "mitogenome", "{sample}.fasta"), sample=sample_names)
     output:
         final_fasta = os.path.join(dir_hostcleaned, "mitogenome", "final_mitogenome.aln")
     params:
@@ -72,8 +72,7 @@ rule build_alignment_fasta:
             echo "Final alignment fasta already exists. Skipping..."
             exit 0
         else
-            cat {params.folder}/*_consensus.fasta > all_samples.fasta
-            #snp-sites -o {output.final_fasta} all_samples.fasta
+            cat {params.folder}/*.fasta > all_samples.fasta
             mafft --auto all_samples_WRef.fasta > {output.final_fasta}
         fi
         """
