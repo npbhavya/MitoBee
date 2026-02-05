@@ -3,7 +3,7 @@ requires = ["setuptools>=69", "setuptools_scm", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "MitoMee"
+name = "MitoBee"
 dynamic = ["version"]
 description = "Build mitogenomes from WGS metagenomes"
 readme = { file = "README.md", content-type = "text/markdown" }
@@ -39,13 +39,13 @@ dependencies = [
 ]
 
 [project.scripts]
-mitomee = "mitomee.__main__:main"
+mitomee = "mitobee.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["mitomee*"]
+include = ["mitobee*"]
 
 # Configure setuptools_scm (reads version from your Git tags)
 [tool.setuptools_scm]
-write_to = "mitomee/_version.py"
+write_to = "mitobee/_version.py"
 fallback_version = "0.1.0"
