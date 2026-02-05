@@ -32,11 +32,10 @@ Input files:
 - Input directory with metagenomes
 - Reference genome, include only one
 
-Output files:
-- Provide the output folder, contains subdirectories
-      - PROCESSING: Folder containing intermediate files
-      - RESULTS: Final results including the mitogenome fasta files from (hopefully) each metagenome sample \
-              Also inlcudes the QC reports, to include stats on how many reads were processed, and not
+Output files: Provide the output folder, contains subdirectories
+- PROCESSING: Folder containing intermediate files
+- RESULTS: Final results including the mitogenome fasta files from (hopefully) each metagenome sample \
+      Also inlcudes the QC reports, to include stats on how many reads were processed, and not
 
 #If you have other reference mitogenomes to `output/REPORTS/mitogenomes`. No need to add the reference sequence, it will be included
 
