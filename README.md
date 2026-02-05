@@ -37,14 +37,14 @@ Output files: Provide the output folder, contains subdirectories
 - RESULTS: Final results including the mitogenome fasta files from (hopefully) each metagenome sample \
       Also inlcudes the QC reports, to include stats on how many reads were processed, and not
 
-#If you have other reference mitogenomes to `output/REPORTS/mitogenomes`. No need to add the reference sequence, it will be included
 
 ### Build a mitogenome tree
 
     mitomee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
 
 Input files:
-- Input directory containing all mitochondrial genomes
+- Input directory containing all mitochondrial genomes \
+  If you have other reference mitogenomes to `output/REPORTS/mitogenomes`. No need to add the reference sequence, it will be included
 - Procvide the host reference mitogenome
 
 Output files:
