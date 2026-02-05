@@ -1,10 +1,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/npbhavya/MitoMee/main)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/npbhavya/MitoBee/main)
 
 
-# MitoMee
+# MitoBee
 
 ## Snakemake workflow to get mitogenomes from metagenomic data
 
@@ -13,10 +13,10 @@
 **Source install**
 Run the below commands:
 
-    git clone https://github.com/npbhavya/MitoMee.git
-    cd MitMee
-    mamba create -y -n mitomee python=3.13
-    conda activate mitomee
+    git clone https://github.com/npbhavya/MitoBee.git
+    cd MitBee
+    mamba create -y -n mitobee python=3.13
+    conda activate mitobee
     pip install -e . 
 
 **Downloading the test-files** 
@@ -27,7 +27,7 @@ The test files are large, so to download them, use `git-lfs`, Needed if you want
 
 ### Running the code
 
-    mitomee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
+    mitobee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
          --host_seq test-files/am-dh4.fasta \
          --output output
 
@@ -43,7 +43,7 @@ Output files: Provide the output folder, contains subdirectories
 
 ### Build a mitogenome tree
 
-    mitomee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
+    mitobee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
 
 Input files:
 - Input directory containing all mitochondrial genomes \
