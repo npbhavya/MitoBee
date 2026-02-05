@@ -28,8 +28,25 @@ Run the below commands:
          --host_seq test-files/am-dh4.fasta \
          --output output
 
-#build tree with host seq, assembled mitogenomes. 
-#Also add other reference mitogenomes to  output/REPORTS/mitogenomes. No need to add the reference sequence, it will be included
+Input files:
+- Input directory with metagenomes
+- Reference genome, include only one
+
+Output files:
+- Provide the output folder, contains subdirectories
+      - PROCESSING: Folder containing intermediate files
+      - RESULTS: Final results including the mitogenome fasta files from (hopefully) each metagenome sample \
+              Also inlcudes the QC reports, to include stats on how many reads were processed, and not
+
+#If you have other reference mitogenomes to `output/REPORTS/mitogenomes`. No need to add the reference sequence, it will be included
+
 #Then run the subcommand to build tree 
 
     mitomee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
+
+Input files:
+- Input directory containing all mitochondrial genomes
+- Procvide the host reference mitogenome
+
+Output files:
+- RESULTS: the tree in nwk format
