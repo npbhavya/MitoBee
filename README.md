@@ -19,6 +19,8 @@ Run the below commands:
     conda activate mitomee
     pip install -e . 
 
+**Downloading the test-files**
+The test files are large, so to download them, use `git-lfs`, Needed if you want to test the installation. 
 
 **Once I have version release, I will upload them to conda and pip as well**
 
