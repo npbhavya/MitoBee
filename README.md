@@ -39,7 +39,7 @@ Output files: Provide the output folder, contains subdirectories
 
 #If you have other reference mitogenomes to `output/REPORTS/mitogenomes`. No need to add the reference sequence, it will be included
 
-#Then run the subcommand to build tree 
+### Build a mitogenome tree
 
     mitomee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
 
