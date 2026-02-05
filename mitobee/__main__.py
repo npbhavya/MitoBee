@@ -20,14 +20,14 @@ def snake_base(rel_path):
 
 def get_version():
     try:
-        from mitomee._version import version
+        from mitobee._version import version
     except Exception:
         version = "0.1.0"
     return version
 
 
 def print_citation():
-    with open(snake_base("../MitoMee.CITATION"), "r") as f:
+    with open(snake_base("../MitoBee.CITATION"), "r") as f:
         for line in f:
             echo_click(line)
 
@@ -83,14 +83,14 @@ def cli():
     """ Extarct and assemble host mitochondrial genomes from metagenomic sequencing data.
     \b
     For more options, run:
-    mitomee --help"""
+    mitobee --help"""
     pass
 
 
 help_msg_run = """
 \b
 RUN EXAMPLES 
-mitomee run --input <input directory with metagenome reads> --extn fq --host_seq <path to host mitochondrial genome> --sequencing paired --output <output directory> -k
+mitobee run --input <input directory with metagenome reads> --extn fq --host_seq <path to host mitochondrial genome> --sequencing paired --output <output directory> -k
 """
 @click.command(epilog=help_msg_run, 
     context_settings=dict(help_option_names=["-h", "--help"], ignore_unknown_options=True)
@@ -100,7 +100,7 @@ mitomee run --input <input directory with metagenome reads> --extn fq --host_seq
 
 @common_options
 def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_frontend, **kwargs):
-    """Run mitomee workflow"""
+    """Run mitobee workflow"""
     copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
 
     merge_config = {
@@ -131,7 +131,7 @@ def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_
 help_msg_run = """
 \b
 RUN EXAMPLES 
-mitomee tree --input output/REPORTS/mitogenome --extn fasta --host_seq test-files/am-dh4.fasta --output output -k
+mitobee tree --input output/REPORTS/mitogenome --extn fasta --host_seq test-files/am-dh4.fasta --output output -k
 """
 @click.command(epilog=help_msg_run, 
     context_settings=dict(help_option_names=["-h", "--help"], ignore_unknown_options=True)
@@ -139,7 +139,7 @@ mitomee tree --input output/REPORTS/mitogenome --extn fasta --host_seq test-file
 
 @common_options
 def tree(_input, extn, host_seq, output, temp_dir, configfile, conda_frontend, **kwargs):
-    """Run mitomee workflow"""
+    """Run mitobee workflow"""
     copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
 
     merge_config = {
