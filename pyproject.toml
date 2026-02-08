@@ -39,7 +39,7 @@ dependencies = [
 ]
 
 [project.scripts]
-mitomee = "mitobee.__main__:main"
+mitobee = "mitobee.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
