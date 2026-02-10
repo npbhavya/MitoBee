@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#SBATCH --account pengel_default
 #SBATCH --job-name mitomee_dev
 #SBATCH --output dev-%j.error
 #SBATCH --error dev-%j.out
@@ -11,7 +12,7 @@
 
 
 mitomee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
-     --host_seq test-files/am-dh4.fasta \
+     --host_seq test-files/am-dh4.fasta --profile slurm \
      --conda-frontend mamba --output output
 
 #build tree with host seq, assembled mitogenomes. 
