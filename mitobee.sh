@@ -11,7 +11,7 @@
 #SBATCH --time=8:00:00
 
 
-mitomee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
+mitobee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
      --host_seq test-files/am-dh4.fasta --profile slurm \
      --conda-frontend mamba --output output
 
@@ -19,4 +19,4 @@ mitomee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
 #Also add other reference mitogenomes to  output/REPORTS/mitogenomes. No need to add the reference sequence, it will be included
 #Then run the subcommand to build tree 
 
-mitomee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
+mitobee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
