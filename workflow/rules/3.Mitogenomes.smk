@@ -45,20 +45,46 @@ rule host_mito_mapping:
         fi
         """
 
-rule host_mito_snps:
+rule bam_sort:
     input:
         bam = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.bam"),
+    output:
+        sort_bam = sort_bam=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
+        depth=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps_depth.txt")
+    conda:
+        os.path.join(dir_env, "minimap2.yaml")
+    resources:
+        mem_mb =config['resources']['smalljob']['mem_mb'],
+        runtime = config['resources']['smalljob']['runtime']
+    threads: 
+        config['resources']['smalljob']['threads']
+    shell:
+        """
+        set -euo pipefail
+        if [ -f {output.bam0} ]; then
+            echo "Output file found, so this run looks liks its run. Skipping..."
+            exit 0
+        else
+        
+            #prep the bam
+            samtools sort -o {output.sort_bam} {input.bam}
+            samtools index {output.sort_bam}
+            samtools depth {output.sort_bam} > {output.depth}
+        fi
+        """
+
+rule host_mito_snps:
+    input:
+        bam = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
         host= config['args']['host_seq']
     output:
         vcf = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.vcf.gz"),
         filterred_vcf = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.vcf.gz")
     params:
-        sort_bam=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
         prefix = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome"),
         stats=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.stats.txt"),
-        depth=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps_depth.txt")
     conda:
-        os.path.join(dir_env, "minimap2.yaml")
+        os.path.join(dir_env, "bcftools.yaml")
     resources:
         mem_mb =config['resources']['smalljob']['mem_mb'],
         runtime = config['resources']['smalljob']['runtime']
@@ -72,10 +98,6 @@ rule host_mito_snps:
             exit 0
         else
 
-            #prep the bam
-            samtools sort -o {params.sort_bam} {input.bam}
-            samtools index {params.sort_bam}
-
             #call variants
             bcftools mpileup -f {input.host} -Q 20 -q 20 {params.sort_bam} | \
                 bcftools call --ploidy 1 -mv -Ov -o {output.vcf}
@@ -87,7 +109,6 @@ rule host_mito_snps:
 
             #getting the stats
             bcftools stats {output.filterred_vcf} > {params.stats}
-            samtools depth {params.sort_bam} > {params.depth}
         fi
         """
 
@@ -100,7 +121,7 @@ rule normalise_vcfs:
         host= config['args']['host_seq'],
         temp=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.filtered.temp.vcf.gz"), 
     conda:
-        os.path.join(dir_env, "minimap2.yaml")
+        os.path.join(dir_env, "bcftools.yaml")
     shell:
         """
         set -euo pipefail
@@ -125,7 +146,7 @@ rule generate_allele_frequency:
     params:
         prefix = "{sample}",
     conda:
-        os.path.join(dir_env, "minimap2.yaml")
+        os.path.join(dir_env, "bcftools.yaml")
     shell:
         """
         set -euo pipefail
@@ -153,7 +174,7 @@ rule merge_vcf:
         temp=os.path.join(dir_hostcleaned, "mitogenome", "merged_mitogenome_snps.temp.vcf.gz"),
         folder=os.path.join(dir_hostcleaned, "mitogenome")
     conda:
-        os.path.join(dir_env, "minimap2.yaml")
+        os.path.join(dir_env, "bcftools.yaml")
     shell:
         """
         set -euo pipefail
@@ -177,7 +198,7 @@ rule snp_alignment:
     params:
         sample = "{sample}",
     conda:
-        os.path.join(dir_env, "minimap2.yaml")
+        os.path.join(dir_env, "bcftools.yaml")
     params:
         sample="{sample}",
         folder=os.path.join(dir_hostcleaned, "mitogenome")
