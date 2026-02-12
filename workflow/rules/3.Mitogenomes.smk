@@ -49,7 +49,7 @@ rule bam_sort:
     input:
         bam = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.bam"),
     output:
-        sort_bam = sort_bam=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
+        sort_bam=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
         depth=os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps_depth.txt")
     conda:
         os.path.join(dir_env, "minimap2.yaml")
