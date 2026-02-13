@@ -61,7 +61,7 @@ rule bam_sort:
     shell:
         """
         set -euo pipefail
-        if [ -f {output.bam0} ]; then
+        if [ -f {output.bam} ]; then
             echo "Output file found, so this run looks liks its run. Skipping..."
             exit 0
         else
