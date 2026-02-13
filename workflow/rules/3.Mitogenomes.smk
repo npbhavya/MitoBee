@@ -75,7 +75,7 @@ rule bam_sort:
 
 rule host_mito_snps:
     input:
-        bam = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
+        sort_bam = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mapped.sorted.bam"),
         host= config['args']['host_seq']
     output:
         vcf = os.path.join(dir_hostcleaned, "mitogenome", "{sample}_mitogenome_snps.vcf.gz"),
@@ -99,7 +99,7 @@ rule host_mito_snps:
         else
 
             #call variants
-            bcftools mpileup -f {input.host} -Q 20 -q 20 {params.sort_bam} | \
+            bcftools mpileup -f {input.host} -Q 20 -q 20 {input.sort_bam} | \
                 bcftools call --ploidy 1 -mv -Ov -o {output.vcf}
             bcftools index {output.vcf}
 
