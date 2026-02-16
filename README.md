@@ -26,10 +26,34 @@ The test files are large, so to download them, use `git-lfs`, Needed if you want
 **Once I have version release, I will upload them to conda and pip as well**
 
 ### Running the code
+Run the below code 
 
     mitobee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
          --host_seq test-files/am-dh4.fasta \
          --output output
+
+**HPC version:** 
+- Follow the template in `mitobee.sh` file in repository. Update the account, job specs for your cluster
+- Also note the `--profile slurm` in the command requires a file `~/.config/snakemake/slurm/config.yaml` in your HPC $HOME. \
+  If this file doesn't exist, create the file and add
+
+```
+    executor: slurm
+    jobs: 100
+
+    default-resources:
+      slurm_account: <slurm account> #ignore if this not required in your cluster
+      slurm_partition: cpu
+      mem_mb: 100000
+      runtime: 100
+
+    latency-wait: 120
+    restart-times: 2
+    rerun-incomplete: true
+    printshellcmds: true
+    use-conda: true
+    keep-going: true
+```
 
 Input files:
 - Input directory with metagenomes
