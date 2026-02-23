@@ -50,7 +50,12 @@ def common_options(func):
     options = [
         click.option('--input', '_input', help='Directory of reads', type=click.Path(), required=False, default='testReads/paired', show_default=True),
         click.option('--extn', 'extn',  help='Reads extension; fastq, fq, fastq.gz', type=click.Path(), required=False, default='fastq', show_default=True),
+        click.option('pattern_r1', 'r1', help='Pattern to identify R1 reads (for paired-end data)', default='_R1', show_default=True),
+        click.option('pattern_r2', 'r2', help='Pattern to identify R2 reads (for paired-end data)', default='_R2', show_default=True),
         click.option('--host_seq', 'host_seq', help='Path to host genome index for host read removal', type=click.Path(), required=True, show_default=True),
+        click.option('--mitogenome', 'mitogenome', help='Code to know if the reference search is against mitochondrial genomes', type=click.Path(), required=False, show_default=True),
+        click.option('--gene', 'gene', help='Code to know if the reference search is against mitochondrial genes', type=click.Path(), required=False, show_default=True),
+        click.option('--ref_set', 'refdb', help='Path to reference database of mitochondrial genomes or mitochondrial genes', type=click.Path(), required=False, show_default=True),
         click.option('--output', 'output', help='Output directory', type=click.Path(),
                      default='output', show_default=True),
         click.option("--configfile", default="config.yaml", show_default=False, callback=default_to_output,
@@ -62,7 +67,7 @@ def common_options(func):
         click.option('--snake-default', multiple=True,
                      default=['--rerun-incomplete', '--printshellcmds', '--nolock', '--show-failed-logs'],
                      help="Customise Snakemake runtime args", show_default=True),
-        click.option("--log", default="sphae.log", callback=default_to_output, hidden=True,),
+        click.option("--log", default="mitobee.log", callback=default_to_output, hidden=True,),
         click.option('--use-conda', default=True, help='Use conda for Snakemake rules',
                      show_default=True),
         click.option('--conda-frontend', default='mamba', help='Use mamba for Snakemake rules',
@@ -80,7 +85,7 @@ def common_options(func):
 @click.group(cls=OrderedCommands, context_settings=dict(help_option_names=["-h", "--help"]))
 @click.version_option(get_version(), "-v", "--version", is_flag=True)
 def cli():
-    """ Extarct and assemble host mitochondrial genomes from metagenomic sequencing data.
+    """ Extract and assemble host mitochondrial genomes from metagenomic sequencing data.
     \b
     For more options, run:
     mitobee --help"""
@@ -90,7 +95,7 @@ def cli():
 help_msg_run = """
 \b
 RUN EXAMPLES 
-mitobee run --input <input directory with metagenome reads> --extn fq --host_seq <path to host mitochondrial genome> --sequencing paired --output <output directory> -k
+mitobee run --input <input directory with metagenome reads> --pattern_r1 R1 --patern_r2 R2 --extn fq --host_seq <path to host mitochondrial genome> --sequencing paired --output <output directory> -k
 """
 @click.command(epilog=help_msg_run, 
     context_settings=dict(help_option_names=["-h", "--help"], ignore_unknown_options=True)
@@ -99,7 +104,7 @@ mitobee run --input <input directory with metagenome reads> --extn fq --host_seq
 @click.option('--sequencing', 'sequencing', help="sequencing method", default='paired', show_default=True, type=click.Choice(['paired', 'longread']))
 
 @common_options
-def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_frontend, **kwargs):
+def run(_input, extn, r1, r2, host_seq, output, sequencing, temp_dir, configfile, conda_frontend, **kwargs):
     """Run mitobee workflow"""
     copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
 
@@ -108,6 +113,8 @@ def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_
             "input": _input, 
             "output": output, 
             "extn": extn,
+            "pattern_r1": r1,
+            "pattern_r2": r2,
             "host_seq": host_seq,
             "sequencing": sequencing,
             "configfile": configfile,
@@ -130,7 +137,7 @@ def run(_input, extn, host_seq, output, sequencing, temp_dir, configfile, conda_
 
 help_msg_run = """
 \b
-RUN EXAMPLES 
+TREE EXAMPLES 
 mitobee tree --input output/REPORTS/mitogenome --extn fasta --host_seq test-files/am-dh4.fasta --output output -k
 """
 @click.command(epilog=help_msg_run, 
@@ -167,6 +174,54 @@ def tree(_input, extn, host_seq, output, temp_dir, configfile, conda_frontend, *
         **kwargs
     )
 
+help_msg_run = """
+\b
+SEARCH EXAMPLES 
+mitobee search --input output/REPORTS/mitogenome --extn fasta --pattern_r1 R1 --patern_r2 R2 --ref_set test-files/ref-db --output output -k
+"""
+@click.command(epilog=help_msg_run, 
+    context_settings=dict(help_option_names=["-h", "--help"], ignore_unknown_options=True)
+    )
+
+@common_options
+def search(_input, extn, r1, r2, refdb, mitogenome, gene, output, temp_dir, configfile, conda_frontend, **kwargs):
+    """Run mitobee workflow"""
+    copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
+    
+    # --- MUTUAL EXCLUSIVITY CHECK ---
+    if mitogenome and gene:
+        raise click.UsageError("Options --mitogenome and --gene are mutually exclusive. Please use only one.")
+    elif not mitogenome and not gene:
+        raise click.UsageError("You must provide either --mitogenome or --gene.")
+
+    merge_config = {
+        "args": {
+            "input": _input, 
+            "output": output, 
+            "extn": extn,
+            "pattern_r1": r1,
+            "pattern_r2": r2,
+            "ref_set": refdb,
+            "configfile": configfile,
+            "temp_dir": temp_dir,
+            "mitogenome": mitogenome,   
+            "gene": gene,
+        }
+    }
+
+    snake_default = list(kwargs.get('snake_default', []))
+    if conda_frontend and not any('--conda-frontend' in str(arg) for arg in snake_default):
+        snake_default.extend(['--conda-frontend', conda_frontend])
+    kwargs['snake_default'] = tuple(snake_default)
+
+    # run!
+    run_snakemake(
+        snakefile_path=snake_base(os.path.join('workflow', 'Search.Snakefile')),
+        configfile=configfile,
+        merge_config=merge_config,
+        targets=["all"], 
+        **kwargs
+    )
 
 @click.command()
 @click.option('--configfile', default='config.yaml', help='Copy template config to file', show_default=True)
@@ -183,6 +238,7 @@ def citation(**kwargs):
 
 cli.add_command(run)
 cli.add_command(tree)
+cli.add_command(search)
 cli.add_command(config)
 cli.add_command(citation)
 

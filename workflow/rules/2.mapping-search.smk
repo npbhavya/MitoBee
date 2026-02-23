@@ -1,0 +1,99 @@
+"""
+Rules for host searchand mapping. 
+The goal of this rule is to search for the host sequence that best maps to the ref set
+"""
+rule host_mapping_search:
+    input:
+        r1 = os.path.join(dir_fastp,"{sample}_R1.fastq.gz"),
+        r2 = os.path.join(dir_fastp,"{sample}_R2.fastq.gz"),
+        host= config['args']['ref_set']
+    output:
+        all_bam=os.path.join(dir_hostsearch,"{sample}_temp.bam"),
+        stats=os.path.join(dir_hostsearch,"{sample}_bamstats.txt")
+    params:
+        host_group= os.path.join(dir_hostsearch, "ref_group.fasta")
+    conda:
+        os.path.join(dir_env, "minimap2.yaml")
+    resources:
+        mem_mb =config['resources']['smalljob']['mem_mb'],
+        runtime = config['resources']['smalljob']['runtime']
+    threads: 
+        config['resources']['smalljob']['threads']
+    shell:
+        """
+        set -euo pipefail
+
+        #if the reference set is 1 then run minimap2, else concatenate and run the reference set
+        # If multiple reference files → concatenate
+        if [ $(echo {input.host} | wc -w) -gt 1 ]; then
+            cat {input.host} > {output.host_group}
+            REF={output.host_group}
+        else
+            REF={input.host}
+        fi
+
+        
+        minimap2 -ax sr -t {threads} $REF {input.r1} {input.r2} \
+             | samtools sort -@ {threads} -o {output.all_bam} -
+        
+        samtools index {output.all_bam}
+        """
+
+"""
+Given the mapping metrics considered should be based on if the reference set are 
+- within the same species 
+- within the same genus
+- across genera
+"""
+rule host_mapping_metrics:
+    input:
+        bam=os.path.join(dir_hostsearch,"{sample}_temp.bam")
+    output:
+        metrics=os.path.join(dir_hostsearch, "{sample}_primary_idxstats.txt"),
+        primary=os.path.join(dir_hostsearch,"{sample}_primary_coverage.txt"),
+        coverage=os.path.join(dir_hostsearch,"{sample}_primary_coverage.txt"),
+        strict=os.path.join(dir_hostsearch,"{sample}_strict_idxstats.txt")
+    params:
+        primary_bam=os.path.join(dir_hostsearch,"{sample}_primary.bam"),
+        strict_bam=os.path.join(dir_hostsearch,"{sample}_strict.bam")
+    conda:
+        os.path.join(dir_env, "minimap2.yaml")
+    resources:
+        mem_mb =config['resources']['smalljob']['mem_mb'],
+        runtime = config['resources']['smalljob']['runtime']
+    threads: 
+        config['resources']['smalljob']['threads']
+    shell:
+        """
+        set -euo pipefail
+
+        #linient mapping metrics:
+        #outside genus
+        samtools idxstats {input.bam} > {output.metrics}
+        
+        #primary alignments only (remove secondary and supplementary alignments):
+        #within genus
+        samtools view -F 0x900 {input.bam} > {params.primary_bam}
+        samtools idxstats {params.primary_bam} > {output.metrics}
+        samtools coverage {params.primary_bam} > {output.coverage}
+
+        #strict mappimng metrics (conservative metrics with only primary alignments and high mapping quality):
+        #within subspecies
+        samtools view -F 0x900 -q 30 {input.bam} > {params.strict_bam}
+        samtools idxstats {params.strict_bam} > {output.strict}
+
+        rm {params.primary_bam} {params.strict_bam}
+        """
+
+"""
+Now adding a rule for scoring mechanism to determine the best mapping reference for each sample.
+"""
+rule host_mapping_score:
+    input:
+        primary_idx = os.path.join(dir_hostsearch,"{sample}_primary_idxstats.txt"),
+        primary_cov = os.path.join(dir_hostsearch,"{sample}_primary_coverage.txt"),
+        strict_idx = os.path.join(dir_hostsearch,"{sample}_strict_idxstats.txt")
+    output:
+        summary = os.path.join(dir_hostsearch,"{sample}_host_ranking.tsv")
+    script:
+        "scripts/score_hosts.py"

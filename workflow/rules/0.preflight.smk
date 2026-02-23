@@ -42,7 +42,8 @@ dir_script = os.path.join(workflow.basedir,"scripts")
 #making directories for each step
 #Saving most of the files to PROCESSING, sine they are intermediate files
 dir_fastp = os.path.join(dir_out, 'PROCESSING' ,'1_fastp')
-dir_hostcleaned = os.path.join(dir_out, 'PROCESSING' ,'2_host_cleaned')
+dir_hostcleaned = os.path.join(dir_out, 'PROCESSING' ,'Host_cleaned')
+dir_hostsearch = os.path.join(dir_out, 'PROCESSING' ,'Reference_search')
 dir_reports = os.path.join(dir_out, 'REPORTS')
 
 
@@ -55,29 +56,34 @@ input_dir = config['args']['input']
 extn=config['args']['extn']
 
 if config['args']['sequencing'] == 'paired':
-    # match only read1 files where the final pair suffix appears immediately before the extension
-    pattern = os.path.join(input_dir, f'*_1.{extn}')
-    # also accept common _R1 naming
-    pattern_r1 = os.path.join(input_dir, f'*_R1.{extn}')
-    file_paths = sorted(set(glob.glob(pattern) + glob.glob(pattern_r1)))
-    # Strip common FASTQ extensions and remove only the final pair suffix (_1/_2 or _R1/_R2)
-    sample_names = [
-        re.sub(r'(?i)(?:_R?[12])$', '', re.sub(r"\.(?:fq|fastq)(?:\.gz)?$", '', os.path.basename(fp)))
-        for fp in file_paths
-    ]
-    # preserve order but remove duplicates if any
+
+    pattern_r1 = config['args']['pattern_r1']
+    pattern_r2 = config['args']['pattern_r2']
+
+    # Convert {sample} into wildcard *
+    glob_pattern = pattern_r1.replace("{sample}", "*")
+
+    file_paths = sorted(glob.glob(os.path.join(input_dir, glob_pattern)))
+
+    sample_names = []
+    for fp in file_paths:
+        filename = os.path.basename(fp)
+
+        # Extract sample name by reversing the pattern
+        sample = filename.replace(
+            pattern_r1.replace("{sample}", ""),
+            ""
+        )
+
+        sample_names.append(sample)
+
     sample_names = list(dict.fromkeys(sample_names))
-elif config['args']['sequencing'] == 'longread':
-    pattern = os.path.join(input_dir, f"*.{extn}")
-    file_paths = sorted(glob.glob(pattern))
-    sample_names = [re.sub(r"\.(?:fq|fastq)(?:\.gz)?$", '', os.path.basename(fp)) for fp in file_paths]
 
 print(f"Samples are {sample_names}")
 
 FQEXTN = extn[0]
-PATTERN_R1 = '{sample}_R1.' + extn
-PATTERN_R2 = '{sample}_R2.' + extn
-PATTERN_LONG= '{sample}' + extn
+PATTERN_R1 = f'{{sample}}_{pattern_r1}{extn}'
+PATTERN_R2 = f'{{sample}}_{pattern_r2}{extn}'
 
 """ONSTART/END/ERROR
 Tasks to perform at various stages the start and end of a run.

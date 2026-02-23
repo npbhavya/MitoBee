@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [![](https://img.shields.io/static/v1?label=CLI&message=Snaketool&color=blueviolet)](https://github.com/beardymcjohnface/Snaketool)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/npbhavya/MitoBee/main)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/npbhavya/MitoBee?branch=main)
 
 
 # MitoBee
@@ -21,25 +21,64 @@ Run the below commands:
 
 **Downloading the test-files** 
 
-The test files are large, so to download them, use `git-lfs`, Needed if you want to test the installation. 
+The test files are large, so to download them, use `git-lfs`, Needed if you want to test the installation with the test files
 
-**Once I have version release, I will upload them to conda and pip as well**
+**Once I have a stable version release, I will upload them to conda and pip as well**
 
 ### Running the code
-Run the below code 
+Note: This code works only on paired end metagenomes for now. 
 
-    mitobee run --input test-files/metagenomes --extn fastq.gz --sequencing paired \
+This workflow is made modular; 
+
+1. `mitobee run` 
+If there is a representative closely related genome mitogenome, provide that as the host seq and get started
+
+```
+    #Running mitobee with test files available in the repo
+    mitobee run --input test-files/metagenomes --extn fastq.gz \
+         --pattern_r1 _R1 --pattern_r2 _R2 \
+         --sequencing paired \
          --host_seq test-files/am-dh4.fasta \
          --output output
+```
+
+2. `mitobee tree`
+Once the mitochondrial genomes are built from each metagenome sample, run this module to build a tree with these mitogenomes and other references
+
+```
+    #After the mitogenomes are made from the mitobee run results. Add other references to build a tree
+    #Once again example with test files
+    mitobee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
+
+```
+
+3.  `mitobee search`
+If there is a no closely related mitogenome available, then this step can be run first to search against a set of mitogenomes or mito genes 
+This module will provide an overview of which reference to use
+
+```
+    #If a closely related mitochondrial genome is not available, but a gene is, like cox  or rRNA genes
+    #Download the reference genes you would like to use of the closely related genomes
+
+    #to search against mitogenomes refernece set
+    mitobee gene --input test-files/mitogenomes --extn fasta --ref_seq  test-files/ref --output output -k all --mitogenome
+
+    #to search against mitogenomes refernece gene set 
+    mitobee gene --input test-files/mitogenomes --extn fasta --ref_seq  test-files/ref --output output -k all --genes 
+
+```
 
 **HPC version:** 
-- Follow the template in `mitobee.sh` file in repository. Update the account, job specs for your cluster
+To run mitobee on HPC
+
+Job script (SLURM format) provided in `mitobee.sh` file in repository. Update the account, job specs for your cluster.
+
 - Also note the `--profile slurm` in the command requires a file `~/.config/snakemake/slurm/config.yaml` in your HPC $HOME. \
   If this file doesn't exist, create the file and add
 
 ```
     executor: slurm
-    jobs: 100
+    jobs: 100 #update this accordingly if the number of jobs per user is smaller on your cluster
 
     default-resources:
       slurm_account: <slurm account> #ignore if this not required in your cluster
@@ -54,25 +93,15 @@ Run the below code
     use-conda: true
     keep-going: true
 ```
-
+### Input files
 Input files:
 - Input directory with metagenomes
-- Reference genome, include only one
+- Reference directory
+  - If running `run`  or `tree` module, provide a **(one)** reference genome. 
+  - If running `gene` module, provide a reference gene set
 
+### Output files
 Output files: Provide the output folder, contains subdirectories
 - PROCESSING: Folder containing intermediate files
-- RESULTS: Final results including the mitogenome fasta files from (hopefully) each metagenome sample \
+- REPORTS: Final results including the mitogenome fasta files from (hopefully) each metagenome sample \
       Also inlcudes the QC reports, to include stats on how many reads were processed, and not
-
-
-### Build a mitogenome tree
-
-    mitobee tree --input test-files/mitogenomes --extn fasta --host_seq test-files/am-dh4.fasta --output output -k all
-
-Input files:
-- Input directory containing all mitochondrial genomes \
-  If you have other reference mitogenomes to `output/REPORTS/mitogenomes`. No need to add the reference sequence, it will be included
-- Procvide the host reference mitogenome
-
-Output files:
-- RESULTS: the tree in nwk format
