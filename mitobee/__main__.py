@@ -101,8 +101,6 @@ mitobee run --input <input directory with metagenome reads> --pattern_r1 R1 --pa
     context_settings=dict(help_option_names=["-h", "--help"], ignore_unknown_options=True)
     )
 
-@click.option('--sequencing', 'sequencing', help="sequencing method", default='paired', show_default=True, type=click.Choice(['paired', 'longread']))
-
 @common_options
 def run(_input, extn, r1, r2, host_seq, output, sequencing, temp_dir, configfile, conda_frontend, **kwargs):
     """Run mitobee workflow"""
