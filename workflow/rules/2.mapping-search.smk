@@ -11,9 +11,6 @@ rule host_mapping_search:
         all_bam=os.path.join(dir_hostsearch,"{sample}_temp.bam"),
     params:
         host_group= os.path.join(dir_hostsearch, "ref_group.fasta"),
-        REF=lambda wildcards, input, params: (
-            params.host_group if len(input.host) > 1 else input.host[0]
-        )
     conda:
         os.path.join(dir_env, "minimap2.yaml")
     resources:
@@ -21,20 +18,24 @@ rule host_mapping_search:
         runtime = config['resources']['smalljob']['runtime']
     threads: 
         config['resources']['smalljob']['threads']
-    shell:
-        """
-        set -euo pipefail
+        run:
+        # If multiple reference files, concatenate into one
+        if len(input.host) > 1:
+            with open(params.host_group, "wb") as wfd:
+                for f in input.host:
+                    with open(f, "rb") as fd:
+                        wfd.write(fd.read())
+            ref_file = params.host_group
+        else:
+            ref_file = input.host[0]
 
-        # Concatenate if needed
-        if [ {len(input.host)} -gt 1 ]; then
-            cat {input.host} > {params.host_group}
-        fi
-                
-        minimap2 -ax sr -t {threads} {params.REF} {input.r1} {input.r2} \
-            | samtools sort -@ {threads} -o {output.all_bam} -
-
-        samtools index {output.all_bam}
-        """
+        # Run minimap2 and samtools
+        shell(f"""
+            set -euo pipefail
+            minimap2 -ax sr -t {threads} {ref_file} {input.r1} {input.r2} \
+                | samtools sort -@ {threads} -o {output.all_bam} -
+            samtools index {output.all_bam}
+        """)
 
 """
 Given the mapping metrics considered should be based on if the reference set are 
