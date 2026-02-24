@@ -22,8 +22,8 @@ rule host_mapping_search:
     shell:
         """
         set -euo pipefail
-
-        cat {input.host}/*.fasta > {params.host_group}
+        rm -rf {params.host_group}
+        cat {input.host}/*.fasta >> {params.host_group}
 
         minimap2 -ax sr -t {threads} {params.host_group} {input.r1} {input.r2} \
             | samtools sort -@ {threads} -o {output.all_bam} -
