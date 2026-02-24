@@ -28,6 +28,8 @@ rule host_mapping_search:
             REF={input.host}
         fi
 
+        echo "Mapping {input.r1} and {input.r2} to reference set: $REF"
+
         minimap2 -ax sr -t {threads} $REF {input.r1} {input.r2} \
             | samtools sort -@ {threads} -o {output.all_bam} -
 
