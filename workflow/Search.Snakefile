@@ -32,15 +32,14 @@ Defining the targets dictionary
 """
 targets ={'qc':[], 'hostsearch':[]}
 
-if config['args']['sequencing'] == 'paired':
-    for sample in sample_names:
-        targets['qc'].append(expand(os.path.join(dir_fastp,"{sample}.stats.html"), sample=sample)),
-        targets['hostsearch'].append(expand(os.path.join(dir_hostsearch,"{sample}_temp.bam"),sample=sample))
-        targets['hostsearch'].append(expand(os.path.join(dir_hostsearch, "{sample}_all_idxstats.txt"),sample=sample))
-        targets['hostsearch'].append(expand(os.path.join(dir_hostsearch,"{sample}_primary_idxstats.txt"),sample=sample))
-        targets['hostsearch'].append(expand(s.path.join(dir_hostsearch,"{sample}_primary_coverage.txt"),sample=sample))
-        targets['hostsearch'].append(expand(s.path.join(dir_hostsearch,"{sample}_strict_idxstats.txt"),sample=sample))
-        targets['hostsearch'].append(expand(os.path.join(dir_hostsearch,"{sample}_host_ranking.tsv"), sample=sample))
+for sample in sample_names:
+    targets['qc'].append(expand(os.path.join(dir_fastp,"{sample}.stats.html"), sample=sample)),
+    targets['hostsearch'].append(expand(os.path.join(dir_hostsearch,"{sample}_temp.bam"),sample=sample))
+    targets['hostsearch'].append(expand(os.path.join(dir_hostsearch, "{sample}_all_idxstats.txt"),sample=sample))
+    targets['hostsearch'].append(expand(os.path.join(dir_hostsearch,"{sample}_primary_idxstats.txt"),sample=sample))
+    targets['hostsearch'].append(expand(s.path.join(dir_hostsearch,"{sample}_primary_coverage.txt"),sample=sample))
+    targets['hostsearch'].append(expand(s.path.join(dir_hostsearch,"{sample}_strict_idxstats.txt"),sample=sample))
+    targets['hostsearch'].append(expand(os.path.join(dir_hostsearch,"{sample}_host_ranking.tsv"), sample=sample))
 
 
 @targetRule
