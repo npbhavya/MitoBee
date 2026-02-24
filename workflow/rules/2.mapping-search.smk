@@ -98,6 +98,6 @@ rule host_mapping_score:
         strict_idx = os.path.join(dir_hostsearch,"{sample}_strict_idxstats.txt")
     output:
         summary = os.path.join(dir_hostsearch,"{sample}_host_ranking.tsv")
-    local: True
+    localrule: True
     script:
         "../scripts/score_hosts.py"
