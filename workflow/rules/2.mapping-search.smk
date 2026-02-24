@@ -9,7 +9,6 @@ rule host_mapping_search:
         host= config['args']['ref_set']
     output:
         all_bam=os.path.join(dir_hostsearch,"{sample}_temp.bam"),
-        stats=os.path.join(dir_hostsearch,"{sample}_bamstats.txt")
     params:
         host_group= os.path.join(dir_hostsearch, "ref_group.fasta")
     conda:
