@@ -72,7 +72,7 @@ rule host_mapping_metrics:
         
         #primary alignments only (remove secondary and supplementary alignments):
         #within genus
-        samtools view -F 0x900 {input.bam} > {params.primary_bam}
+        samtools view  -b -F 0x900 {input.bam} > {params.primary_bam}
         samtools sort -@ {threads} -o {params.primary_bam}.sorted.bam {params.primary_bam}
         mv {params.primary_bam}.sorted.bam {params.primary_bam}
         samtools index {params.primary_bam}
@@ -81,7 +81,7 @@ rule host_mapping_metrics:
 
         #strict mappimng metrics (conservative metrics with only primary alignments and high mapping quality):
         #within subspecies
-        samtools view -F 0x900 -q 30 {input.bam} > {params.strict_bam}
+        samtools view  -b -F 0x900 -q 30 {input.bam} > {params.strict_bam}
         samtools sort -@ {threads} -o {params.strict_bam}.sorted.bam {params.strict_bam}
         mv {params.strict_bam}.sorted.bam {params.strict_bam}
         samtools index {params.strict_bam}
