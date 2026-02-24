@@ -7,7 +7,7 @@ rule host_mapping_search:
     input:
         r1 = os.path.join(dir_fastp,"{sample}_R1.fastq.gz"),
         r2 = os.path.join(dir_fastp,"{sample}_R2.fastq.gz"),
-        host=config['args']['ref_set'] if isinstance(config['args']['ref_set'], list) else [config['args']['ref_set']]
+        host=config['args']['ref_set']
     output:
         all_bam=os.path.join(dir_hostsearch,"{sample}_temp.bam"),
     params:
@@ -21,22 +21,11 @@ rule host_mapping_search:
         config['resources']['smalljob']['threads']
     shell:
         """
-        # Count number of files
-        NUM={{input.host}}
-        echo $NUM reference files provided for mapping.
+        set -euo pipefail
 
-        # Concatenate if multiple references
-        if [ $NUM -gt 1 ]; then
-            cat "${{FILES[@]}}" > {params.host_group}
-            REF={params.host_group}
-        else
-            REF="${{FILES[0]}}"
-        fi
+        cat {input.host}/*.fasta > {params.host_group}
 
-        echo "Mapping {input.r1} and {input.r2} to reference set: $REF"
-
-
-        minimap2 -ax sr -t {threads} $REF {input.r1} {input.r2} \
+        minimap2 -ax sr -t {threads} {params.host_group} {input.r1} {input.r2} \
             | samtools sort -@ {threads} -o {output.all_bam} -
 
         samtools index {output.all_bam}
