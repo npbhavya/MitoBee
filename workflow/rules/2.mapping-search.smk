@@ -18,24 +18,21 @@ rule host_mapping_search:
         runtime = config['resources']['smalljob']['runtime']
     threads: 
         config['resources']['smalljob']['threads']
-    run:
-        # If multiple reference files, concatenate into one
-        if len(input.host) > 1:
-            with open(params.host_group, "wb") as wfd:
-                for f in input.host:
-                    with open(f, "rb") as fd:
-                        wfd.write(fd.read())
-            ref_file = params.host_group
-        else:
-            ref_file = input.host[0]
+    shell:
+        """
+        # Concatenate if multiple references
+        if [ $(echo {input.host} | wc -w) -gt 1 ]; then
+            cat {input.host} > {params.host_group}
+            REF={params.host_group}
+        else
+            REF={input.host}
+        fi
 
-        # Run minimap2 and samtools
-        shell(f"""
-            set -euo pipefail
-            minimap2 -ax sr -t {threads} {ref_file} {input.r1} {input.r2} \
-                | samtools sort -@ {threads} -o {output.all_bam} -
-            samtools index {output.all_bam}
-        """)
+        minimap2 -ax sr -t {threads} $REF {input.r1} {input.r2} \
+            | samtools sort -@ {threads} -o {output.all_bam} -
+
+        samtools index {output.all_bam}
+        """
 
 """
 Given the mapping metrics considered should be based on if the reference set are 
