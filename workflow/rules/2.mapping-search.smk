@@ -25,8 +25,8 @@ rule host_mapping_search:
         #if the reference set is 1 then run minimap2, else concatenate and run the reference set
         # If multiple reference files → concatenate
         if [ $(echo {input.host} | wc -w) -gt 1 ]; then
-            cat {input.host} > {output.host_group}
-            REF={output.host_group}
+            cat {input.host} > {params.host_group}
+            REF={params.host_group}
         else
             REF={input.host}
         fi
