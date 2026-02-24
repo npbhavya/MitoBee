@@ -76,7 +76,7 @@ rule host_mapping_metrics:
         samtools sort -@ {threads} -o {params.primary_bam}.sorted.bam {params.primary_bam}
         mv {params.primary_bam}.sorted.bam {params.primary_bam}
         samtools index {params.primary_bam}
-        samtools idxstats {params.primary_bam} > {output.metrics}
+        samtools idxstats {params.primary_bam} > {output.primary}
         samtools coverage {params.primary_bam} > {output.coverage}
 
         #strict mappimng metrics (conservative metrics with only primary alignments and high mapping quality):
