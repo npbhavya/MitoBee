@@ -73,8 +73,8 @@ sample_names = list(dict.fromkeys(sample_names))
 print(f"Samples are {sample_names}")
 
 FQEXTN = extn[0]
-PATTERN_R1 = f'{{sample}}{pattern_r1}{extn}'
-PATTERN_R2 = f'{{sample}}{pattern_r2}{extn}'
+PATTERN_R1 = f'{{sample}}{pattern_r1}.{extn}'
+PATTERN_R2 = f'{{sample}}{pattern_r2}.{extn}'
 
 """ONSTART/END/ERROR
 Tasks to perform at various stages the start and end of a run.
