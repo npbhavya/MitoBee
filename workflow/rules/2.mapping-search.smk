@@ -22,9 +22,9 @@ rule host_mapping_search:
     shell:
         """
         # Count number of files
-        NUM={{#input.host}}
+        NUM={{input.host}}
         echo $NUM reference files provided for mapping.
-        
+
         # Concatenate if multiple references
         if [ $NUM -gt 1 ]; then
             cat "${{FILES[@]}}" > {params.host_group}
