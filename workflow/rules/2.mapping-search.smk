@@ -20,16 +20,22 @@ rule host_mapping_search:
         config['resources']['smalljob']['threads']
     shell:
         """
+        # Expand host references into an array
+        FILES=({input.host}/*.fasta)
+
+        # Count number of files
+        NUM=${#FILES[@]}
+
         # Concatenate if multiple references
-        FILES={input.host}/*.fasta
-        if [ (echo $FILES | wc -w) -gt 1 ]; then
-            cat {input.host} > {params.host_group}
+        if [ $NUM -gt 1 ]; then
+            cat "${FILES[@]}" > {params.host_group}
             REF={params.host_group}
         else
-            REF={input.host}
+            REF="${FILES[0]}"
         fi
 
         echo "Mapping {input.r1} and {input.r2} to reference set: $REF"
+
 
         minimap2 -ax sr -t {threads} $REF {input.r1} {input.r2} \
             | samtools sort -@ {threads} -o {output.all_bam} -
