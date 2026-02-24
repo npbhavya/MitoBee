@@ -53,8 +53,7 @@ def common_options(func):
         click.option('--pattern_r1', 'r1', help='Pattern to identify R1 reads (for paired-end data)', default='_R1', show_default=True),
         click.option('--pattern_r2', 'r2', help='Pattern to identify R2 reads (for paired-end data)', default='_R2', show_default=True),
         click.option('--host_seq', 'host_seq', help='Path to host genome index for host read removal', type=click.Path(), show_default=True),
-        click.option('--mitogenome', 'mitogenome', help='Code to know if the reference search is against mitochondrial genomes', type=click.Path(), required=False, show_default=True),
-        click.option('--gene', 'gene', help='Code to know if the reference search is against mitochondrial genes', type=click.Path(), required=False, show_default=True),
+        click.option('--mode', type=click.Choice(['mitogenome', 'gene'], case_sensitive=False), help='Reference search mode either gene or mitochondrial genome', required=False),
         click.option('--ref_set', 'refdb', help='Path to reference database of mitochondrial genomes or mitochondrial genes', type=click.Path(), required=False, show_default=True),
         click.option('--output', 'output', help='Output directory', type=click.Path(),
                      default='output', show_default=True),
@@ -185,16 +184,10 @@ mitobee search --input <input directory with metagenome reads> --extn fastq.gz -
     )
 
 @common_options
-def search(_input, extn, r1, r2, refdb, mitogenome, gene, output, temp_dir, configfile, conda_frontend, **kwargs):
+def search(_input, extn, r1, r2, refdb, mode, output, temp_dir, configfile, conda_frontend, **kwargs):
     """Run mitobee workflow"""
     copy_config(configfile, system_config=snake_base(os.path.join('config', 'config.yaml')))
     
-    # --- MUTUAL EXCLUSIVITY CHECK ---
-    if mitogenome and gene:
-        raise click.UsageError("Options --mitogenome and --gene are mutually exclusive. Please use only one.")
-    elif not mitogenome and not gene:
-        raise click.UsageError("You must provide either --mitogenome or --gene.")
-
     merge_config = {
         "args": {
             "input": _input, 
@@ -205,8 +198,7 @@ def search(_input, extn, r1, r2, refdb, mitogenome, gene, output, temp_dir, conf
             "ref_set": refdb,
             "configfile": configfile,
             "temp_dir": temp_dir,
-            "mitogenome": mitogenome,   
-            "gene": gene,
+            "mode": mode,
         }
     }
 
