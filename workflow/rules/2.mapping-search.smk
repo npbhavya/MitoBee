@@ -3,18 +3,11 @@ Rules for host searchand mapping.
 The goal of this rule is to search for the host sequence that best maps to the ref set
 """
 
-#helper function for below rule 
-def make_list(x):
-    if isinstance(x, list):
-        return x
-    else:
-        return [x]
-
 rule host_mapping_search:
     input:
         r1 = os.path.join(dir_fastp,"{sample}_R1.fastq.gz"),
         r2 = os.path.join(dir_fastp,"{sample}_R2.fastq.gz"),
-        host=make_list(config['args']['ref_set'])  # always a list now
+        host=config['args']['ref_set'] if isinstance(config['args']['ref_set'], list) else [config['args']['ref_set']]
     output:
         all_bam=os.path.join(dir_hostsearch,"{sample}_temp.bam"),
     params:
@@ -28,12 +21,10 @@ rule host_mapping_search:
         config['resources']['smalljob']['threads']
     shell:
         """
-         Use the Snakemake input.host list directly
-        FILES=({" ".join(input.host)})
-
         # Count number of files
-        NUM={{#FILES[@]}}
-
+        NUM={{#input.host}}
+        echo $NUM reference files provided for mapping.
+        
         # Concatenate if multiple references
         if [ $NUM -gt 1 ]; then
             cat "${{FILES[@]}}" > {params.host_group}
@@ -41,7 +32,7 @@ rule host_mapping_search:
         else
             REF="${{FILES[0]}}"
         fi
-        
+
         echo "Mapping {input.r1} and {input.r2} to reference set: $REF"
 
 
