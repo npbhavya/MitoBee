@@ -30,47 +30,6 @@ rule host_mapping:
         """
 
 """
-Rules for host contamination removal 
-"""
-rule unmapped_reads:
-    input:
-        r1 = os.path.join(dir_fastp,"{sample}_R1.fastq.gz"),
-        r2 = os.path.join(dir_fastp,"{sample}_R2.fastq.gz"),
-        all_bam=os.path.join(dir_hostcleaned,"{sample}_temp.bam")
-    output:
-        r1 = os.path.join(dir_hostcleaned,"{sample}_R1.hostcleaned.fastq.gz"),
-        r2 = os.path.join(dir_hostcleaned,"{sample}_R2.hostcleaned.fastq.gz"),
-    params:
-        unmapped_bam = os.path.join(dir_hostcleaned,"{sample}_unmapped.bam")
-    conda:
-        os.path.join(dir_env, "minimap2.yaml")
-    resources:
-        mem_mb =config['resources']['smalljob']['mem_mb'],
-        runtime = config['resources']['smalljob']['runtime']
-    threads: 
-        config['resources']['smalljob']['threads']
-    shell:
-        """
-        set -euo pipefail
-        if [ -f {output.r1} ] && [ -f {output.r2} ]; then
-            echo "Unmapped reads already exist. Skipping..."
-            exit 0
-        else
-            # get unmapped reads
-            samtools view -b -f 4 -@ {threads} -o {params.unmapped_bam} {input.all_bam}
-
-            #unmapped reads to fastq
-            samtools fastq -@ {threads} -0 /dev/null -s /dev/null -n \
-                -1 >(gzip -c  > {output.r1}) \
-                -2 >(gzip -c  > {output.r2}) \
-                {params.unmapped_bam}
-
-            touch {output.r1}
-            touch {output.r2}
-        fi
-        """
-
-"""
 Rules for host reads extraction 
 """
 rule host_mapped_reads:
