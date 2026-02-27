@@ -1,6 +1,8 @@
 """
 Snakemake rules for generating mitogenome reports
 """
+from glob import glob
+
 rule mitogenome_summary:
     """
     Summarize mitogenome consensus FASTA:
@@ -13,6 +15,7 @@ rule mitogenome_summary:
     params:
         sample="{sample}",
         max_frac=0.333
+    localrule: True
     shell:
         r"""
         awk -v fname="{params.sample}_consensus.fasta" '
@@ -47,9 +50,10 @@ rule mitogenome_summary:
 
 rule mitogenome_reports_aggregate:
     input:
-        summaries = glob(os.path.join(dir_hostcleaned, "mitogenome", "*_consensus.summary.tsv"))
+        summaries = os.path.join(dir_hostcleaned, "mitogenome", "*_consensus.summary.tsv"))
     output:
         aggregate = os.path.join(dir_reports, "mitogenome_consensus_summary.tsv")
+    localrule: True
     shell:
         """
         echo -e "filename\theader\tlength\tGC_content\tN_count\tN_fraction\tQC_status" > {output.aggregate}
