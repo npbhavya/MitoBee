@@ -200,8 +200,8 @@ rule snp_alignment:
     conda:
         os.path.join(dir_env, "bcftools.yaml")
     params:
-        sample="{sample}",
-        folder=os.path.join(dir_hostcleaned, "mitogenome")
+        sample = "{sample}",
+        folder = os.path.join(dir_hostcleaned, "mitogenome")
     shell:
         """
         set -euo pipefail
