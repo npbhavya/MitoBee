@@ -213,8 +213,8 @@ rule snp_alignment:
             SAMPLE_FULL=$(bcftools query -l {input.merged_vcf} | grep "{params.sample}")
 
             # Create BED file of zero coverage positions
-            samtools depth -a {input.sort_bam} \
-                | awk '$3==0 {print $1"\t"$2-1"\t"$2}' > zero_cov.bed
+            samtools depth -a {input.sort_bam} _\
+                | awk '$3==0 {print $1"_\_\t"$2-1"_\_\t"$2}' > zero_cov.bed
 
             # Generate consensus masking zero coverage
             bcftools consensus -s "$SAMPLE_FULL" -f {input.host} -m zero_cov.bed {input.merged_vcf} > {output.consensus_fasta}
