@@ -1,11 +1,22 @@
 """
 Rules for quality control and quality assurance - Illumina paired end reads 
 """
+
+import glob
+import os
+
+# PATTERN_R1 could be *_R1.fastq.gz or something user-specified
+r1_files = glob.glob(os.path.join(input_dir, PATTERN_R1))
+r2_files = glob.glob(os.path.join(input_dir, PATTERN_R2))
+
+# Extract sample names by stripping the suffixes
+SAMPLES = [os.path.basename(f).replace(PATTERN_R1.replace("*", ""), "") for f in r1_files]
+
 #quality control rules here
 rule fastp:
     input:
-        r1 = os.path.join(input_dir, PATTERN_R1),
-        r2 = os.path.join(input_dir, PATTERN_R2)
+        r1 = lambda wildcards: os.path.join(input_dir, f"{wildcards.sample}{PATTERN_R1.replace('*', '')}"),
+        r2 = lambda wildcards: os.path.join(input_dir, f"{wildcards.sample}{PATTERN_R2.replace('*', '')}")
     output:
         r1 = os.path.join(dir_fastp,"{sample}_R1.fastq.gz"),
         r2 = os.path.join(dir_fastp,"{sample}_R2.fastq.gz"),
